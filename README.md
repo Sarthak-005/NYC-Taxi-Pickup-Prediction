@@ -33,30 +33,30 @@ Pickup/Drop-off Latitude and Longitude :
 It is inferred from the source https://www.flickr.com/places/info/2459115 that New York is bounded by the location coordinates(lat,long) - (40.5774, -74.15) & (40.9176,-73.7004). So, any coordinates not within these coordinates are not considered by us as we are only concerned with pickups which originate within New York.
 
 - Trip Durations:
-According to NYC Taxi & Limousine Commision Regulations the maximum allowed trip duration in a 24 hour interval is 12 hours. So we remove the points where the duration is >12 hr
+According to NYC Taxi & Limousine Commision Regulations the maximum allowed trip duration in a 24 hour interval is 12 hours. So I removed the points where the duration is >12 hr
 
 - Speed:
-We found that the 99.9th percentile value of speed is 45.31 mph. So, we consider only the data points where the computed speed is <45.31mph. We also observed that the avg speed in New York is 12.45miles/hr, i.e. a cab driver can travel 2 miles per 10min on avg
+I found that the 99.9th percentile value of speed is 45.31 mph. So, I considered only the data points where the computed speed is <45.31mph. I also observed that the avg speed in New York is 12.45miles/hr, i.e. a cab driver can travel 2 miles per 10min on avg
 
 - Trip Distance:
-The 99.9th percentile value of the distance covered in a ride is ~23 miles. So we remove rows with large trip distances
+The 99.9th percentile value of the distance covered in a ride is ~23 miles. So I removed rows with large trip distances
 
 - Fare:
-From percentile and graphical analysis, we set the upper limit of total fare to be 1000$ and consider only the data points which satisfies the limit
+From percentile and graphical analysis, I set the upper limit of total fare to be 1000$ and consider only the data points which satisfies the limit
 ## ML Problem Formulation
 ### Time-series forecasting and Regression
 To find number of pickups, given location cordinates(latitude and longitude) and time, in the query reigion and surrounding regions.
-To solve the above we would be using data collected in Jan - Mar 2015 to predict the pickups in Jan - Mar 2016.
+To solve the above I used data collected in Jan - Mar 2015 to predict the pickups in Jan - Mar 2016.
 
 ## Data preparation:
 - Clustering/Segmentaion:
-Now we break whole of NYC into clusters/segments/regions. We choose the (lat,long) of pickup as features and we apply K-Means clustering algorithm(we find the right K using GridSearch). On choosing a cluster size of 40, we find an optimal min inter-cluster distance. Finally, we assign the cluster no. to each data point
+Now, break whole of NYC into clusters/segments/regions. I chose the (lat,long) of pickup as features and apply K-Means clustering algorithm(find the right K using GridSearch). On choosing a cluster size of 40, find an optimal min inter-cluster distance. Finally, assign the cluster no. to each data point
 
 - Time-binning:
-We use the unix time-stamps to find the 10 min time-bins each data point belongs to(index of the 10min time interval to which that data point belongs)
+I used the unix time-stamps to find the 10 min time-bins each data point belongs to(index of the 10min time interval to which that data point belongs)
 
 - Smoothing time-series data:
-In our time-series data plot, there will be some 10-min bins where there are no pickups. And its not useful to predict zero pickups for a data point and moreover these points will create a problem in Moving Averages(using ratios). Thus, we smooth our training data(2015)(as in smoothing we are looking at future values) and fill with zero our test data(2016)
+In my time-series data plot, there will be some 10-min bins where there are no pickups. And its not useful to predict zero pickups for a data point and moreover these points will create a problem in Moving Averages(using ratios). Thus, we smooth our training data(2015)(as in smoothing we are looking at future values) and fill with zero our test data(2016)
 
 - Fourier Transform:
 From the Fourier transform plot of our time-series data we find the top amplitudes and corresponding frequencies
@@ -66,15 +66,18 @@ From the Fourier transform plot of our time-series data we find the top amplitud
 - Mean Squared error.
 
 ## Modeling : Baseline Models
-I haveused the following baseline model by generating feature with ratio and previous value at a time (t-1) and will calculate Mean Absolute Percentage Error
+I have used the following baseline model by generating feature with ratio and previous value at a time (t-1) and will calculate Mean Absolute Percentage Error
 
 - Moving Averages
 - Weighted Moving Averages
 - Exponential Moving Averages
-Along with that, we will use below regression model by selecting best hyper-parameter with the help of different technique depending on hype parameter to predict the taxi demand.
+Along with that, I have used the following regression model by selecting best hyper-parameter with the help of different technique depending on hype parameter to predict the taxi demand.
 
 - Linear Regression with GridSearch
 - Random Forest Regressor with Random search
 - XgBoost Regressor with Random search
+
+### Comparison between different models:
+
 ![image](https://user-images.githubusercontent.com/58303643/177010545-3cddb80a-cca1-4444-8217-80b2546c5210.png)
 
